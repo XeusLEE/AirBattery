@@ -13,6 +13,7 @@ env:
   # Developer ID signing + notarization run only when the signing secrets exist.
   # Without them the build falls back to an ad-hoc ("Sign to Run Locally") signature,
   # which runs locally after removing the quarantine attribute but is not notarized.
+  # The ad-hoc build disables the hardened runtime; see the Build step for why.
   HAS_SIGNING: ${{ secrets.MACOS_CERTIFICATE_P12 != '' && secrets.NOTARY_KEY_P8 != '' }}
 
 jobs:
@@ -67,9 +68,15 @@ jobs:
               PROVISIONING_PROFILE_SPECIFIER=
             )
           else
+            # Ad-hoc signatures carry no Team ID, so with the hardened runtime enabled
+            # dyld's library validation refuses the embedded Sparkle.framework
+            # ("mapping process and mapped file have different Team IDs") and the app
+            # aborts at launch. The hardened runtime is only needed for notarization,
+            # which this path does not do, so turn it off here.
             SIGN_ARGS=(
               CODE_SIGN_STYLE=Manual
               CODE_SIGN_IDENTITY=-
+              ENABLE_HARDENED_RUNTIME=NO
               CODE_SIGNING_REQUIRED=NO
               CODE_SIGNING_ALLOWED=YES
               DEVELOPMENT_TEAM=
