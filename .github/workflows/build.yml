@@ -41,18 +41,37 @@ jobs:
           codesign --verify --deep --strict --verbose=2 "$APP"
           codesign -dv "$APP" 2>&1 | grep -E 'Identifier|Signature|TeamIdentifier'
 
-      - name: Package
+      - name: Package DMG
         run: |
           APP=build/Build/Products/Release/AirBattery.app
           SHORT_SHA=$(git rev-parse --short HEAD)
-          ditto -c -k --sequesterRsrc --keepParent "$APP" "AirBattery-${SHORT_SHA}.app.zip"
-          ls -lh AirBattery-*.app.zip
-          echo "SHORT_SHA=$SHORT_SHA" >> "$GITHUB_ENV"
+          VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Contents/Info.plist")
+          DMG="AirBattery_v${VERSION}-${SHORT_SHA}.dmg"
 
-      - name: Upload app
+          # Staging folder: the app plus a drag-to-install Applications link
+          STAGING=dmg-staging
+          rm -rf "$STAGING" && mkdir -p "$STAGING"
+          cp -R "$APP" "$STAGING/"
+          ln -s /Applications "$STAGING/Applications"
+
+          hdiutil create \
+            -volname "AirBattery" \
+            -srcfolder "$STAGING" \
+            -fs HFS+ \
+            -format UDZO \
+            -imagekey zlib-level=9 \
+            -ov "$DMG"
+
+          # Ad-hoc sign the image itself as well
+          codesign --force --sign - "$DMG"
+          hdiutil verify "$DMG"
+          ls -lh "$DMG"
+          echo "DMG_NAME=$DMG" >> "$GITHUB_ENV"
+
+      - name: Upload DMG
         uses: actions/upload-artifact@v4
         with:
-          name: AirBattery-${{ env.SHORT_SHA }}
-          path: AirBattery-*.app.zip
+          name: ${{ env.DMG_NAME }}
+          path: ${{ env.DMG_NAME }}
           if-no-files-found: error
           retention-days: 90
