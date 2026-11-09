@@ -62,6 +62,7 @@ struct mainBatteryView: View {
     @AppStorage("test_iblevel") var test_iblevel = 100
     
     @State var factor = 0.0
+    @State var lowDevice: Device? = nil
     
     var body: some View {
         HStack(alignment: .center, spacing:4){
@@ -148,12 +149,27 @@ struct mainBatteryView: View {
                     .scaledToFit()
                     .frame(width: 16, height: 16)
             }
+            if let d = lowDevice {
+                HStack(spacing: 3) {
+                    Rectangle()
+                        .fill(Color.primary.opacity(0.3))
+                        .frame(width: 1, height: 12)
+                    Image(getDeviceIcon(d))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 13, height: 13)
+                    Text("\(d.batteryLevel)%")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(d.batteryLevel <= menuBarCriticalThreshold ? .red : .orange)
+                }
+            }
         }
+        .onAppear { lowDevice = lowestLowDevice(in: AirBatteryModel.getAll()) }
         .onReceive(dockTimer) { t in refeshPinnedBar() }
         .onReceive(mainTimer) { t in
+            lowDevice = lowestLowDevice(in: AirBatteryModel.getAll())
             if item.hasBattery {
                 InternalBattery.status = getPowerState()
-                let width = statusBarItem.button?.frame.size.width
                 if intBattOnStatusBar {
                     if test_debug {
                         InternalBattery.status = iBattery(hasBattery: test_hasib, isCharging: !test_full, isCharged: false, acPowered: test_ac, timeLeft: "", batteryLevel: test_iblevel)
@@ -161,26 +177,16 @@ struct mainBatteryView: View {
                         InternalBattery.status = getPowerState()
                     }
                     item = InternalBattery.status
-                    if batteryPercent != "outside" {
-                        if width != 42 { setStatusBar(width: 42) }
-                    } else {
-                        if item.batteryLevel > hideLevel {
-                            if width != 42 { setStatusBar(width: 42) }
-                        } else {
-                            if width != 76 { setStatusBar(width: 76) }
-                        }
-                    }
-                } else {
-                    if width != 36 { setStatusBar(width: 36) }
                 }
-            } else {
-                if test_debug {
-                    let width = statusBarItem.button?.frame.size.width
-                    if width != 36 { setStatusBar(width: 36) }
-                    InternalBattery.status = iBattery(hasBattery: test_hasib, isCharging: !test_full, isCharged: false, acPowered: test_ac, timeLeft: "", batteryLevel: test_iblevel)
-                    item = InternalBattery.status
-                }
+            } else if test_debug {
+                InternalBattery.status = iBattery(hasBattery: test_hasib, isCharging: !test_full, isCharged: false, acPowered: test_ac, timeLeft: "", batteryLevel: test_iblevel)
+                item = InternalBattery.status
             }
+            // Width: 42 / 76 / 36 for the Mac glyph, plus 40 pt when a low-device suffix is shown.
+            let width = statusBarItem.button?.frame.size.width
+            let base: Double = (item.hasBattery && intBattOnStatusBar) ? ((batteryPercent != "outside" || item.batteryLevel > hideLevel) ? 42 : 76) : 36
+            let target = base + (lowDevice == nil ? 0 : 40)
+            if width != target { setStatusBar(width: target) }
         }
     }
 }
@@ -220,4 +226,12 @@ func setStatusBar(width: Double) {
     statusBarItem.button?.subviews.removeAll()
     statusBarItem.button?.addSubview(iconView)
     statusBarItem.button?.frame = iconView.frame
+}
+
+/// The external, non-charging device with the lowest battery level at or below
+/// `menuBarLowThreshold()`, or nil when no device is that low.
+func lowestLowDevice(in devices: [Device]) -> Device? {
+    return devices
+        .filter { $0.hasBattery && $0.deviceID != "@MacInternalBattery" && $0.isCharging == 0 && $0.batteryLevel <= menuBarLowThreshold() }
+        .min(by: { $0.batteryLevel < $1.batteryLevel })
 }
