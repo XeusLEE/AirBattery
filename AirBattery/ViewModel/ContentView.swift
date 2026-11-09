@@ -333,10 +333,8 @@ struct popover: View {
     var body: some View {
         let groups = nearcastGroups
         let hiddenRow = hiddenDevices.count > 0
-        // The "Hidden" caption is laid out exactly like a Nearcast section caption, so it is
-        // counted as one more section; the row itself is the hiddenRow term.
         let height = PopoverLayout.height(cardCount: mainCardCount + groups.reduce(0) { $0 + $1.count },
-                                          sectionCount: groups.count + (hiddenRow ? 1 : 0),
+                                          sectionCount: groups.count,
                                           hiddenRow: hiddenRow)
         return ZStack {
             if fromDock { Color.clear.background(BlurView(material: .menu)) }

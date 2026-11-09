@@ -23,11 +23,13 @@ enum PopoverLayout {
     static let maxHeight: CGFloat = 640
 
     /// headerHeight + verticalPadding*2 + cardCount*cardHeight + max(cardCount-1,0)*cardSpacing
-    /// + sectionCount*(sectionCaptionHeight+cardSpacing) + (hiddenRow ? hiddenRowHeight+cardSpacing : 0)
+    /// + sectionCount*(sectionCaptionHeight+cardSpacing)
+    /// + (hiddenRow ? (cardCount > 0 ? cardSpacing : 0) + sectionCaptionHeight + cardSpacing + hiddenRowHeight : 0)
+    /// `sectionCount` is the number of non-empty Nearcast groups; the hidden row carries its own caption.
     static func contentHeight(cardCount: Int, sectionCount: Int, hiddenRow: Bool) -> CGFloat {
         let cards = CGFloat(cardCount) * cardHeight + CGFloat(max(cardCount - 1, 0)) * cardSpacing
         let sections = CGFloat(sectionCount) * (sectionCaptionHeight + cardSpacing)
-        let hidden: CGFloat = hiddenRow ? hiddenRowHeight + cardSpacing : 0
+        let hidden: CGFloat = hiddenRow ? (cardCount > 0 ? cardSpacing : 0) + sectionCaptionHeight + cardSpacing + hiddenRowHeight : 0
         return headerHeight + verticalPadding * 2 + cards + sections + hidden
     }
 
