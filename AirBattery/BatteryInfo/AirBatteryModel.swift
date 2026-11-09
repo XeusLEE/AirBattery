@@ -64,17 +64,21 @@ class AirBatteryModel {
     }
     static let machineType = ud.string(forKey: "machineType") ?? "Mac"
     static let key = "com.lihaoyun6.AirBattery.widget"
+    // Called at the end of updateDevice, outside the lock, so the hook may read Devices.
+    static var updateHook: ((Device) -> Void)?
 
     static func updateDevice(_ device: Device) {
         //let blockedItems = (ud.object(forKey: "blockedDevices") as? [String]) ?? [String]()
         //if blockedItems.contains(device.deviceName) { return }
-        devicesLock.lock(); defer { devicesLock.unlock() }
+        devicesLock.lock()
         //self.Devices.removeAll(where: {blockedItems.contains($0.deviceName)})
         if let index = _devices.firstIndex(where: { $0.deviceName == device.deviceName }) {
             _devices[index] = device
         } else {
             _devices.append(device)
         }
+        devicesLock.unlock()
+        updateHook?(device)
     }
 
     static func hideDevice(_ name: String) {

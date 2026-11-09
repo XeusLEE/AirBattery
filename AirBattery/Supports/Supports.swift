@@ -11,6 +11,9 @@ import UserNotifications
 
 let widgetInterval = ud.integer(forKey: "widgetInterval")
 let updateInterval = ud.integer(forKey: "updateInterval")
+let staleAfterMinutes: Double = 10
+let menuBarCriticalThreshold = 10
+func menuBarLowThreshold() -> Int { return ud.integer(forKey: "menuBarLowThreshold") }
 
 let mainTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 let dockTimer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
@@ -344,6 +347,7 @@ func getPowerState() -> iBattery {
         if let level = internalBattery.charge {
             var ib = iBattery(hasBattery: true, isCharging: internalBattery.isCharging ?? false, isCharged :internalBattery.isCharged ?? false, acPowered: internalBattery.acPowered ?? false, timeLeft: internalBattery.timeLeft, batteryLevel: Int(level))
             if #available(macOS 12.0, *) { ib.lowPower = ProcessInfo.processInfo.isLowPowerModeEnabled }
+            ib.timeRemaining = internalBattery.timeRemaining
             return ib
         }
     }

@@ -189,6 +189,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUserNotifi
                 "nearCast": false,
                 "readBTHID": true,
                 "whitelistMode": false,
+                "menuBarLowThreshold": 20,
                 "neverRemindMe": [String]()
             ]
         )
@@ -240,6 +241,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUserNotifi
         }
         UNUserNotificationCenter.current().delegate = self
         
+        BatteryHistoryStore.shared.load()
+        AirBatteryModel.updateHook = { BatteryHistoryStore.shared.record($0) }
         bleBattery.startScan()
         btdBattery.startScan()
         MagicBattery.shared.startScan()
@@ -307,6 +310,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUserNotifi
     }
     
     func applicationWillTerminate(_ notification: Notification) {
+        BatteryHistoryStore.shared.saveIfNeeded(force: true)
         if let act = keepAliveActivity { ProcessInfo.processInfo.endActivity(act) }
 
         _ = process(path: "/usr/bin/killall", arguments: ["idevicesyslog"])
@@ -418,6 +422,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUserNotifi
                     print("Reloading all widgets...")
                     AirBatteryModel.writeData()
                     WidgetCenter.shared.reloadAllTimelines()
+                case "showpopover":
+                    DispatchQueue.main.async { if !menuPopover.isShown { self.togglePopover(nil) } }
+                case "hidepopover":
+                    DispatchQueue.main.async { menuPopover.performClose(nil) }
                 default: print("Unknow command!")
                 }
             }

@@ -16,6 +16,7 @@ struct iBattery {
     var timeLeft: String
     var batteryLevel: Int
     var lowPower: Bool = false
+    var timeRemaining: Int? = nil   // minutes to full while charging, to empty otherwise
 }
 
 class InternalBattery {

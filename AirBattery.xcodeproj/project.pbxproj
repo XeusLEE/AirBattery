@@ -63,6 +63,7 @@
 		5387B6DA360151540C6252C3 /* BatterySample.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E197F0FBE5CB97E3647B26 /* BatterySample.swift */; };
 		64E5A773B73235C1D1FD0CAC /* DurationParts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C138CB3D44733BF10834DAA9 /* DurationParts.swift */; };
 		F461731F82F8E4974878B29A /* Estimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE53574305E36D3F26493F8A /* Estimator.swift */; };
+		C94722CBB686AC8E202CED1E /* BatteryHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96FDB4242114C0654172DD6C /* BatteryHistoryStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -174,6 +175,7 @@
 		C3E197F0FBE5CB97E3647B26 /* BatterySample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packages/BatteryEstimator/Sources/BatteryEstimator/BatterySample.swift; sourceTree = SOURCE_ROOT; };
 		C138CB3D44733BF10834DAA9 /* DurationParts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packages/BatteryEstimator/Sources/BatteryEstimator/DurationParts.swift; sourceTree = SOURCE_ROOT; };
 		CE53574305E36D3F26493F8A /* Estimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packages/BatteryEstimator/Sources/BatteryEstimator/Estimator.swift; sourceTree = SOURCE_ROOT; };
+		96FDB4242114C0654172DD6C /* BatteryHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryHistoryStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -338,6 +340,7 @@
 				185E382C2C2733B9005578EC /* BTDBattery.swift */,
 				18F615F22B763DD800873AA4 /* BLEBattery.swift */,
 				18F615F82B76439300873AA4 /* AirBatteryModel.swift */,
+				96FDB4242114C0654172DD6C /* BatteryHistoryStore.swift */,
 			);
 			path = BatteryInfo;
 			sourceTree = "<group>";
@@ -573,6 +576,7 @@
 				5387B6DA360151540C6252C3 /* BatterySample.swift in Sources */,
 				64E5A773B73235C1D1FD0CAC /* DurationParts.swift in Sources */,
 				F461731F82F8E4974878B29A /* Estimator.swift in Sources */,
+				C94722CBB686AC8E202CED1E /* BatteryHistoryStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
