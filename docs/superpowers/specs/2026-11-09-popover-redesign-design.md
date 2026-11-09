@@ -73,6 +73,7 @@ Kayıt kuralları (`DeviceHistory.append`):
 - Geçmiş boşsa kaydet.
 - `l` veya `c` son örnekten farklıysa kaydet.
 - Aynı olsa bile son örnekten bu yana **30 dakika** geçtiyse kaydet (kalp atışı; uzun düz dönemlerin de zaman damgası olsun).
+- Aykırı değer koruması: şarj durumu değişmediği halde seviye son örneğe göre **25 puan veya daha fazla** sıçradıysa ve aradan **10 dakikadan az** geçtiyse kaydetme (tek bozuk BLE okuması saçma tahmin üretmesin; sıçrama gerçekse 10 dakika sonra kabul edilir).
 - Saklama: en eski örnekler düşer; 7 günden eski olanlar ve 300'ü aşanlar silinir.
 
 Faz çıkarma (en yeniden geriye yürü, aşağıdakilerden biri olunca dur):
@@ -120,8 +121,9 @@ Satırlar bugünkü cihaz listesiyle bire bir aynıdır; sıralama, filtreler, A
 
 Boyutlandırma:
 
-- Popover (NSPopover): içerik sabit genişlik 352 pt, yükseklik içeriğin doğal yüksekliği (`.frame(width: 352)` ve sabit yükseklik yok). İçerik 640 pt'yi aşarsa kart listesi `ScrollView` içine alınır ve yükseklik 640 pt'de kalır.
-- Dock penceresi: `AirBatteryApp.applicationShouldHandleReopen` içindeki `37 * satır + 30 + 7 * grup` formülü kaldırılır; yükseklik `NSHostingView.fittingSize.height` ile ölçülür, üst sınır ekranın görünür yüksekliği eksi 40 pt (aşarsa aynı `ScrollView`). Konumlandırma mantığı (Dock yönüne göre x/y) aynen kalır, sadece `menuHeight` ölçülen değerden gelir.
+- Kartların yüksekliği sabittir (68 pt); popover yüksekliği tek bir fonksiyondan (`PopoverLayout.height(cardCount:sectionCount:hiddenRow:)`) hesaplanır ve kök görünüme `.frame(width: 352, height:)` olarak verilir. Böylece NSPopover ve Dock penceresi aynı deterministik değeri kullanır; bugünkü gibi iki yerde ayrı ayrı tutulan sihirli sayılar kalmaz.
+- İçerik 640 pt'yi aşarsa kart listesi `ScrollView` içine alınır ve yükseklik 640 pt'de kalır.
+- Dock penceresi: `AirBatteryApp.applicationShouldHandleReopen` içindeki `37 * satır + 30 + 7 * grup` formülü kaldırılır; yükseklik `NSHostingView.fittingSize.height` ile okunur (yukarıdaki frame'e eşittir), üst sınır ekranın görünür yüksekliği eksi 40 pt. Konumlandırma mantığı (Dock yönüne göre x/y) aynen kalır, sadece `menuHeight` ölçülen değerden gelir.
 
 Karanlık mod: yalnızca semantik renkler ve opaklıklar; etiket renkleri `my_green/my_yellow/my_red` varlıkları üstüne %16 opaklık zemin. Animasyon eklenmez.
 
@@ -131,7 +133,7 @@ Karanlık mod: yalnızca semantik renkler ve opaklıklar; etiket renkleri `my_gr
 - Aday varsa en düşük seviyeli olan seçilir. İkonun sağına 4 pt boşluk, 1 pt dikey ayırıcı (%30 opak), 4 pt boşluk, cihaz simgesi 13 pt template (`getDeviceIcon`), 3 pt boşluk, "N%" 11 pt semibold: ≤10 kırmızı, 11–20 turuncu.
 - Aday yoksa ek görünmez, ikon bugünkü genişliğine döner.
 - Genişlik: bugünkü taban genişliğe (36/42/76) ek için +40 pt; değişiklikte mevcut `setStatusBar(width:)` çağrılır. Hesap `mainTimer` tetiklemesinde yapılır, bir önceki genişlikle aynıysa yeniden kurulmaz.
-- Eşik (20) ve renk eşiği (10) `Supports.swift`'te sabit; yeni ayar eklenmez.
+- Renk eşiği (10) `Supports.swift`'te sabit. Düşük eşiği (20) arayüzde ayar olarak sunulmaz; `UserDefaults` içindeki gizli `menuBarLowThreshold` anahtarından okunur (varsayılan 20). Bu, ekin ekran görüntüsüyle doğrulanmasını (`defaults write com.lihaoyun6.AirBattery menuBarLowThreshold 100`) mümkün kılar.
 - Mac'in pil gösterimi kapalıyken (`intBattOnStatusBar == false`) ya da masaüstü Mac'te de ek aynı şekilde çalışır.
 
 ## 8. Gizli URL komutları
