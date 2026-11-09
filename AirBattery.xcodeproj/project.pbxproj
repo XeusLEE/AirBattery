@@ -60,6 +60,9 @@
 		18EF7E632C141CB70065A9E1 /* BatteryWidget3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EF7E622C1414A50065A9E1 /* BatteryWidget3.swift */; };
 		18F615F32B763DD800873AA4 /* BLEBattery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F615F22B763DD800873AA4 /* BLEBattery.swift */; };
 		18F615F92B76439300873AA4 /* AirBatteryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F615F82B76439300873AA4 /* AirBatteryModel.swift */; };
+		5387B6DA360151540C6252C3 /* BatterySample.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E197F0FBE5CB97E3647B26 /* BatterySample.swift */; };
+		64E5A773B73235C1D1FD0CAC /* DurationParts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C138CB3D44733BF10834DAA9 /* DurationParts.swift */; };
+		F461731F82F8E4974878B29A /* Estimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE53574305E36D3F26493F8A /* Estimator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -168,6 +171,9 @@
 		18EF7E622C1414A50065A9E1 /* BatteryWidget3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryWidget3.swift; sourceTree = "<group>"; };
 		18F615F22B763DD800873AA4 /* BLEBattery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEBattery.swift; sourceTree = "<group>"; };
 		18F615F82B76439300873AA4 /* AirBatteryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirBatteryModel.swift; sourceTree = "<group>"; };
+		C3E197F0FBE5CB97E3647B26 /* BatterySample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packages/BatteryEstimator/Sources/BatteryEstimator/BatterySample.swift; sourceTree = SOURCE_ROOT; };
+		C138CB3D44733BF10834DAA9 /* DurationParts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packages/BatteryEstimator/Sources/BatteryEstimator/DurationParts.swift; sourceTree = SOURCE_ROOT; };
+		CE53574305E36D3F26493F8A /* Estimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packages/BatteryEstimator/Sources/BatteryEstimator/Estimator.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -268,6 +274,7 @@
 				18283DB22B8583A4009B1B13 /* AirBattery.entitlements */,
 				1841D47A2AA8DEF20022A1BE /* Localizable.strings */,
 				1841D4542AA6071D0022A1BE /* Preview Content */,
+				3B75C15ABC76EAD752C6BE18 /* Estimator */,
 			);
 			path = AirBattery;
 			sourceTree = "<group>";
@@ -344,6 +351,16 @@
 				1841D4802AAA28880022A1BE /* SettingsView.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		3B75C15ABC76EAD752C6BE18 /* Estimator */ = {
+			isa = PBXGroup;
+			children = (
+				C3E197F0FBE5CB97E3647B26 /* BatterySample.swift */,
+				C138CB3D44733BF10834DAA9 /* DurationParts.swift */,
+				CE53574305E36D3F26493F8A /* Estimator.swift */,
+			);
+			name = Estimator;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -553,6 +570,9 @@
 				18347DCE2B88417500A78DF6 /* BatteryView.swift in Sources */,
 				18347DCA2B882C6500A78DF6 /* MagicBattery.swift in Sources */,
 				1841D47D2AAA20F80022A1BE /* InternalBattery.swift in Sources */,
+				5387B6DA360151540C6252C3 /* BatterySample.swift in Sources */,
+				64E5A773B73235C1D1FD0CAC /* DurationParts.swift in Sources */,
+				F461731F82F8E4974878B29A /* Estimator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

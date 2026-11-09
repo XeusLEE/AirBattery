@@ -52,6 +52,11 @@ jobs:
           echo "SIGNING_IDENTITY=$IDENTITY" >> "$GITHUB_ENV"
           echo "KEYCHAIN_PATH=$KEYCHAIN" >> "$GITHUB_ENV"
 
+      - name: Estimator unit tests
+        run: |
+          set -o pipefail
+          swift test --package-path Packages/BatteryEstimator 2>&1 | tail -20
+
       - name: Build (Release)
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
