@@ -97,7 +97,6 @@
 "Device Name Copied" = "裝置名複製成功";
 "Device name \"%@\" has been copied to the clipboard." = "裝置名 \"%@\" 已成功複製至剪貼簿";
 "Copy" = "複製";
-"Group ID Copied" = "小組 ID 複製成功";
 "Group ID has been copied to the clipboard." = "小組 ID 已成功複製至剪貼簿";
 "Reload All Widgets" = "重新整理所有小工具";
 "Default" = "預設";
@@ -155,3 +154,18 @@
 "Uninstall" = "解除安裝";
 "Install" = "安裝";
 "After installation, you can run \"airbattery\" in yor terminal to list all devices." = "安裝此工具後, 在命令列中執行\"airbattery\"即可列出所有裝置.";
+
+"Charging" = "充電中";
+"Plugged in" = "已接通電源";
+"Full" = "已充滿";
+"Low" = "電量低";
+"Getting low" = "電量偏低";
+"Nearcast" = "Nearcast";
+"just now" = "剛剛";
+"%d min ago" = "%d 分鐘前";
+"%d h ago" = "%d 小時前";
+"~%@ left" = "約剩 %@";
+"~%@ to full" = "約 %@ 充滿";
+"%d min" = "%d 分鐘";
+"%d h" = "%d 小時";
+"%d d" = "%d 天";

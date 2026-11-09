@@ -178,6 +178,8 @@
 		CE53574305E36D3F26493F8A /* Estimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packages/BatteryEstimator/Sources/BatteryEstimator/Estimator.swift; sourceTree = SOURCE_ROOT; };
 		96FDB4242114C0654172DD6C /* BatteryHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryHistoryStore.swift; sourceTree = "<group>"; };
 		1D909FD70B862B9CD9498065 /* DeviceCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCardView.swift; sourceTree = "<group>"; };
+		DC69948EA3849D30A339B515 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "tr"; path = "tr.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		B125FA04DF7D97B32477B2A9 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "tr"; path = "tr.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -487,6 +489,7 @@
 				Base,
 				"zh-Hans",
 				"zh-Hant",
+				tr,
 			);
 			mainGroup = 1841D4422AA6071C0022A1BE;
 			packageReferences = (
@@ -625,6 +628,7 @@
 			children = (
 				1841D47B2AA8DF0B0022A1BE /* zh-Hans */,
 				1893984D2DF73DF000E7C32E /* zh-Hant */,
+				DC69948EA3849D30A339B515 /* tr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -634,6 +638,7 @@
 			children = (
 				189BD5EA2BDE69660056D06C /* zh-Hans */,
 				1893984C2DF73D8100E7C32E /* zh-Hant */,
+				B125FA04DF7D97B32477B2A9 /* tr */,
 			);
 			name = InfoPlist.strings;
 			path = AirBattery;

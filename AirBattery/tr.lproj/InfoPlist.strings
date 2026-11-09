@@ -1,0 +1,8 @@
+/*
+  InfoPlist.strings
+  AirBattery
+
+  Turkish localization.
+*/
+"NSBluetoothAlwaysUsageDescription" = "AirBattery, yakındaki cihazların pil bilgisini almak için Bluetooth kullanır";
+"NSLocalNetworkUsageDescription" = "AirBattery, yakındaki cihazların pil bilgisini almak için yerel ağı kullanır";
