@@ -64,6 +64,7 @@
 		64E5A773B73235C1D1FD0CAC /* DurationParts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C138CB3D44733BF10834DAA9 /* DurationParts.swift */; };
 		F461731F82F8E4974878B29A /* Estimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE53574305E36D3F26493F8A /* Estimator.swift */; };
 		C94722CBB686AC8E202CED1E /* BatteryHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96FDB4242114C0654172DD6C /* BatteryHistoryStore.swift */; };
+		E77EF5AE9D4B0FAE9E1AF8B2 /* DeviceCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D909FD70B862B9CD9498065 /* DeviceCardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -176,6 +177,7 @@
 		C138CB3D44733BF10834DAA9 /* DurationParts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packages/BatteryEstimator/Sources/BatteryEstimator/DurationParts.swift; sourceTree = SOURCE_ROOT; };
 		CE53574305E36D3F26493F8A /* Estimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packages/BatteryEstimator/Sources/BatteryEstimator/Estimator.swift; sourceTree = SOURCE_ROOT; };
 		96FDB4242114C0654172DD6C /* BatteryHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryHistoryStore.swift; sourceTree = "<group>"; };
+		1D909FD70B862B9CD9498065 /* DeviceCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -352,6 +354,7 @@
 				18347DCD2B88417500A78DF6 /* BatteryView.swift */,
 				1819E94B2CC2A8C2007B95E9 /* BatteryAlertView.swift */,
 				1841D4802AAA28880022A1BE /* SettingsView.swift */,
+				1D909FD70B862B9CD9498065 /* DeviceCardView.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -577,6 +580,7 @@
 				64E5A773B73235C1D1FD0CAC /* DurationParts.swift in Sources */,
 				F461731F82F8E4974878B29A /* Estimator.swift in Sources */,
 				C94722CBB686AC8E202CED1E /* BatteryHistoryStore.swift in Sources */,
+				E77EF5AE9D4B0FAE9E1AF8B2 /* DeviceCardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
