@@ -114,19 +114,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUserNotifi
             if ibStatus.hasBattery { allDevices.insert(ib2ab(ibStatus), at: 0) }
             let contentViewSwiftUI = popover(fromDock: true, allDevice: allDevices)
             let contentView = NSHostingView(rootView: contentViewSwiftUI)
-            let hiddenRow = AirBatteryModel.getBlackList().count > 0 ? 1 : 0
-            let allNearcast = getFiles(withExtension: "json", in: ncFolder)
-            var ncCount = 0
-            var ncDeviceCount = 0
-            for jsonUrl in allNearcast {
-                let count = AirBatteryModel.ncGetAll(url: jsonUrl).count
-                if count != 0 {
-                    ncCount += 7
-                    ncDeviceCount += count
-                }
-            }
-            let menuHeight = CGFloat((max(max(allDevices.count,1)+ncDeviceCount,1)+hiddenRow)*37+30+ncCount)
             let mouse = NSEvent.mouseLocation
+            // The popover's root frame is the measured height; cap it to the screen under the mouse.
+            let menuHeight = min(contentView.fittingSize.height, (NSScreen.screens.first(where: { NSMouseInRect(mouse, $0.frame, false) })?.visibleFrame.height ?? 800) - 40)
             var menuX = mouse.x
             var menuY = mouse.y
             if let screen = NSScreen.screens.first(where: { NSMouseInRect(mouse, $0.frame, false) }) {
