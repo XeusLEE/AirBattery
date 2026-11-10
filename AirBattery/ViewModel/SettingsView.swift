@@ -9,52 +9,57 @@ import SwiftUI
 import ServiceManagement
 import WidgetKit
 
+enum SettingsTab: String, CaseIterable {
+    case general, appearance, devices, discovery, debug
+}
+
 struct SettingsView: View {
-    @State private var selectedItem: String? = "General"
     @AppStorage("showDebug") var showDebug: Bool = false
-    
+    @State private var tab: SettingsTab
+
+    init() {
+        _tab = State(initialValue: SettingsView.initialTab())
+    }
+
+    /// Hidden `settingsTab` default selects the tab the window opens on; `.debug` only while the Debug menu is shown.
+    private static func initialTab() -> SettingsTab {
+        let tab = SettingsTab(rawValue: ud.string(forKey: "settingsTab") ?? "") ?? .general
+        if tab == .debug && !ud.bool(forKey: "showDebug") { return .general }
+        return tab
+    }
+
     var body: some View {
-        NavigationView {
-            List(selection: $selectedItem) {
-                NavigationLink(destination: GeneralView(), tag: "General", selection: $selectedItem) {
-                    Label("General", image: "gear")
-                }
-                NavigationLink(destination: DisplayView(), tag: "Display", selection: $selectedItem) {
-                    Label("Menu Bar & Dock", image: "dock")
-                }
-                NavigationLink(destination: NearbilityView(), tag: "Nearbility", selection: $selectedItem) {
-                    Label("Nearbility", image: "nearbility")
-                }
-                NavigationLink(destination: NearcastView(), tag: "Nearcast", selection: $selectedItem) {
-                    Label("Nearcast", image: "nearcast")
-                }
-                NavigationLink(destination: WidgetView(), tag: "Widget", selection: $selectedItem) {
-                    Label("Widget", image: "widget")
-                }
-                NavigationLink(destination: BlacklistView(), tag: "Blocklist", selection: $selectedItem) {
-                    Label("Blocklist", image: "blacklist")
-                }
-                if showDebug {
-                    NavigationLink(destination: DebugView(selectedItem: $selectedItem), tag: "Debug", selection: $selectedItem) {
-                        Label("Debug", image: "debug")
-                    }
-                }
+        TabView(selection: $tab) {
+            GeneralTab()
+                .tabItem { Label("General", systemImage: "gearshape") }
+                .tag(SettingsTab.general)
+            AppearanceTab()
+                .tabItem { Label("Appearance", systemImage: "paintbrush") }
+                .tag(SettingsTab.appearance)
+            DevicesTab()
+                .tabItem { Label("Devices", systemImage: "laptopcomputer.and.iphone") }
+                .tag(SettingsTab.devices)
+            DiscoveryTab()
+                .tabItem { Label("Discovery", systemImage: "antenna.radiowaves.left.and.right") }
+                .tag(SettingsTab.discovery)
+            if showDebug {
+                DebugTab(tab: $tab)
+                    .tabItem { Label("Debug", systemImage: "ladybug") }
+                    .tag(SettingsTab.debug)
             }
-            .listStyle(.sidebar)
-            .padding(.top, 9)
         }
-        .frame(width: 600, height: 440)
-        .navigationTitle("AirBattery Settings")
     }
 }
 
-struct GeneralView: View {
+struct GeneralTab: View {
     @AppStorage("showOn") var showOn = "sbar"
     @AppStorage("launchAtLogin") var launchAtLogin = false
+    @AppStorage("showEstimate") var showEstimate = true
     @AppStorage("showDebug") var showDebug: Bool = false
     @State private var debugCount: Int = 0
     @State private var cltInstalled: Bool = false
-    
+    @State private var historySummary: (deviceCount: Int, bytes: Int) = (0, 0)
+
     var body: some View {
         SForm {
             SGroupBox(label: "Startup") {
@@ -91,8 +96,7 @@ struct GeneralView: View {
                         _ = createAlert(title: "AirBattery Tips".local, message: "Displaying AirBattery on the Dock will consume more power, it is better to use Menu Bar mode or Widgets.".local, button1: "OK").runModal()
                     }
                 }
-            }
-            SGroupBox {
+                Divider().opacity(0.5)
                 SButton("Command Line Tool", buttonTitle: cltInstalled ? "Uninstall" : "Install",
                         tips: "After installation, you can run \"airbattery\" in yor terminal to list all devices.") {
                     if cltInstalled {
@@ -101,7 +105,26 @@ struct GeneralView: View {
                         CommandLineTool.install { updateCTL() }
                     }
                 }.onAppear { cltInstalled = CommandLineTool.isInstalled() }
-            }.padding(.top, -20)
+            }
+            SGroupBox(label: "Estimate & Data") {
+                SToggle("Show remaining time estimate", isOn: $showEstimate)
+                Divider().opacity(0.5)
+                HStack {
+                    Text(String(format: "History: %d devices, %@".local, historySummary.deviceCount, ByteCountFormatter.string(fromByteCount: Int64(historySummary.bytes), countStyle: .file)))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Button("Clear History".local) {
+                        if createAlert(title: "Clear battery history?".local, message: "This removes the collected samples for all devices. Estimates start over.".local, button1: "Clear".local, button2: "Cancel".local).runModal() == .alertFirstButtonReturn {
+                            BatteryHistoryStore.shared.clear()
+                            historySummary = BatteryHistoryStore.shared.summary()
+                        }
+                    }
+                }.frame(height: 16)
+                Divider().opacity(0.5)
+                SButton("Data Folder", buttonTitle: "Open") {
+                    NSWorkspace.shared.open(ncFolder.deletingLastPathComponent())
+                }
+            }
             SGroupBox(label: "Update") { UpdaterSettingsView(updater: updaterController.updater) }
             VStack(spacing: 8) {
                 CheckForUpdatesView(updater: updaterController.updater)
@@ -119,6 +142,8 @@ struct GeneralView: View {
                 }
             }
         }
+        .frame(width: 560)
+        .onAppear { historySummary = BatteryHistoryStore.shared.summary() }
     }
     func updateCTL() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -127,7 +152,128 @@ struct GeneralView: View {
     }
 }
 
-struct NearbilityView: View {
+struct AppearanceTab: View {
+    @AppStorage("appearance") var appearance = "auto"
+    @AppStorage("showThisMac") var showThisMac = "icon"
+    @AppStorage("carouselMode") var carouselMode = true
+    @AppStorage("colorfulBattery") var colorfulBattery = false
+    @AppStorage("iosBatteryStyle") var iosBatteryStyle = false
+    @AppStorage("intBattOnStatusBar") var intBattOnStatusBar = true
+    @AppStorage("batteryPercent") var batteryPercent = "outside"
+    @AppStorage("hideLevel") var hideLevel = 90
+    @AppStorage("disappearTime") var disappearTime = 20
+    @AppStorage("menuBarLowSuffix") var menuBarLowSuffix = true
+    @AppStorage("menuBarLowThreshold") var lowThreshold = 20
+    @AppStorage("menuBarCriticalThreshold") var criticalThreshold = 10
+    @AppStorage("revListOnWidget") var revListOnWidget = false
+    @AppStorage("deviceOnWidget") var deviceOnWidget = ""
+    @AppStorage("widgetInterval") var widgetInterval = 0
+    @AppStorage("deviceName") var deviceName = "Mac"
+    @State private var levelList = [95, 90, 80, 70, 60, 50, 40, 30, 20, 10]
+
+    @State var ib = getMacDeviceType().lowercased().contains("book")
+    @State var devices = [String]()
+
+    var body: some View {
+        SForm {
+            SGroupBox(label: "Menu Bar") {
+                SToggle("Dynamic Battery Icon", isOn: $intBattOnStatusBar)
+                Divider().opacity(0.5)
+                SToggle("Colorful Battery Icon", isOn: $colorfulBattery)
+                    .disabled(!intBattOnStatusBar)
+                Divider().opacity(0.5)
+                SPicker("Battery Icon Style", selection: $iosBatteryStyle) {
+                    Text("macOS").tag(false)
+                    Text("iOS").tag(true)
+                }.disabled(!intBattOnStatusBar)
+                Divider().opacity(0.5)
+                SPicker("Show Percentage", selection: $batteryPercent) {
+                    Text("Hidden").tag("hide")
+                    Text("Inside").tag("inside")
+                    Text("Outside").tag("outside")
+                }.disabled(!intBattOnStatusBar)
+                Divider().opacity(0.5)
+                SPicker("Remove Offline Device", selection: $disappearTime) {
+                    Text("Never").tag(UInt32.max)
+                    Text("after 20min").tag(20)
+                    Text("after 40min").tag(40)
+                    Text("after 60min").tag(60)
+                }
+                Divider().opacity(0.5)
+                SPicker("Hide percentage when above", selection: $hideLevel) {
+                    Text("Never").tag(100)
+                    ForEach(levelList, id: \.self) { number in
+                        Text("\(number)%").tag(number)
+                    }
+                    if !levelList.contains(hideLevel) && hideLevel != 100 {
+                        Text("\(hideLevel)%").tag(hideLevel)
+                    }
+                }.disabled(!intBattOnStatusBar || (batteryPercent == "hide"))
+            }
+            SGroupBox(label: "Low Device Badge") {
+                SToggle("Show low devices in the menu bar", isOn: $menuBarLowSuffix)
+                Divider().opacity(0.5)
+                SSteper("Low threshold", value: $lowThreshold, min: 5, max: 50)
+                    .disabled(!menuBarLowSuffix)
+                    .onChange(of: lowThreshold) { v in if criticalThreshold > v { criticalThreshold = v } }
+                Divider().opacity(0.5)
+                SSteper("Critical threshold", value: $criticalThreshold, min: 5, max: 30)
+                    .disabled(!menuBarLowSuffix)
+                    .onChange(of: criticalThreshold) { v in if v > lowThreshold { lowThreshold = v } }
+            }
+            SGroupBox(label: "Dock") {
+                    SPicker("Appearance", selection: $appearance) {
+                        Text("Automatic").tag("auto")
+                        Text("Light").tag("false")
+                        Text("Dark").tag("true")
+                    }.pickerStyle(.segmented)
+                    Divider().opacity(0.5)
+                    SPicker("Built-in Battery Style", selection: $showThisMac, tips: "Show or hide this Mac's built-in battery in the Dock icon") {
+                        Text("Hidden").tag("hidden")
+                        Text("Device Icon").tag("icon")
+                        Text("Percent").tag("percent")
+                    }
+                    Divider().opacity(0.5)
+                    SToggle("Carousel Mode", isOn: $carouselMode, tips: "Cycle through all found devices in the Dock icon")
+            }
+            SGroupBox(label: "Widget") {
+                SToggle("Reverse Device List", isOn: $revListOnWidget)
+                Divider().opacity(0.5)
+                SPicker("Refresh Interval", selection: $widgetInterval) {
+                    Text("System Default").tag(-1)
+                    Text("Same as Nearbility").tag(0)
+                }
+                if #unavailable(macOS 14) {
+                    Divider().opacity(0.5)
+                    SPicker("Single Device Widget", selection: $deviceOnWidget) {
+                        Text("Not Set").tag("")
+                        if ib { Text(deviceName).tag(deviceName) }
+                        ForEach(devices, id: \.self) { device in
+                            Text(device).tag(device)
+                        }
+                        if !devices.contains(deviceOnWidget) && deviceOnWidget != deviceName && deviceOnWidget != "" {
+                            Text(deviceOnWidget).tag(deviceOnWidget)
+                        }
+                    }.onChange(of: deviceOnWidget) { _ in _ = AirBatteryModel.singleDeviceName() }
+                }
+                Divider().opacity(0.5)
+                SButton("Reload All Widgets", buttonTitle: "Reload") {
+                    AirBatteryModel.writeData()
+                    WidgetCenter.shared.reloadAllTimelines()
+                }
+            }
+        }
+        .frame(width: 560)
+        .onAppear { devices = AirBatteryModel.getAll(noFilter: true).filter({ $0.hasBattery }).map({ $0.deviceName }) }
+        .onReceive(dockTimer) { _ in
+            if #unavailable(macOS 14) {
+                devices = AirBatteryModel.getAll(noFilter: true).filter({ $0.hasBattery }).map({ $0.deviceName })
+            }
+        }
+    }
+}
+
+struct DiscoveryTab: View {
     @AppStorage("ideviceOverBLE") var ideviceOverBLE = false
     @AppStorage("readBTDevice") var readBTDevice = true
     @AppStorage("readBLEDevice") var readBLEDevice = false
@@ -136,7 +282,9 @@ struct NearbilityView: View {
     @AppStorage("readBTHID") var readBTHID = true
     @AppStorage("updateInterval") var updateInterval = 1
     @AppStorage("twsMerge") var twsMerge = 5
-    
+    @AppStorage("nearCast") var nearCast = false
+    @AppStorage("ncGroupID") var ncGroupID = ""
+
     var body: some View {
         SForm {
             SGroupBox(label: "Scanner") {
@@ -174,17 +322,6 @@ struct NearbilityView: View {
                 Divider().opacity(0.5)
                 SSteper("Earbud Merging Threshold", value: $twsMerge, min: 1, max: 99, tips: "If the difference in battery usage between the left and right earbuds is less than this value, AirBattery will show them as one device.")
             }
-        }
-    }
-}
-
-struct NearcastView: View {
-    @AppStorage("nearCast") var nearCast = false
-    @AppStorage("ncGroupID") var ncGroupID = ""
-    @State var debug: Bool = false
-    
-    var body: some View {
-        SForm {
             SGroupBox(label: "Nearcast") {
                 SToggle("Enable Nearcast", isOn: $nearCast)
                     .onChange(of: nearCast) { newValue in
@@ -263,198 +400,18 @@ struct NearcastView: View {
                 }
             }
         }
+        .frame(width: 560)
     }
 }
 
-struct DisplayView: View {
-    @AppStorage("appearance") var appearance = "auto"
-    @AppStorage("showThisMac") var showThisMac = "icon"
-    @AppStorage("carouselMode") var carouselMode = true
-    @AppStorage("colorfulBattery") var colorfulBattery = false
-    @AppStorage("iosBatteryStyle") var iosBatteryStyle = false
-    @AppStorage("intBattOnStatusBar") var intBattOnStatusBar = true
-    @AppStorage("batteryPercent") var batteryPercent = "outside"
-    @AppStorage("hideLevel") var hideLevel = 90
-    @AppStorage("disappearTime") var disappearTime = 20
-    @State private var levelList = [95, 90, 80, 70, 60, 50, 40, 30, 20, 10]
-    
-    var body: some View {
-        SForm {
-            SGroupBox(label: "Menu Bar") {
-                SToggle("Dynamic Battery Icon", isOn: $intBattOnStatusBar)
-                Divider().opacity(0.5)
-                SToggle("Colorful Battery Icon", isOn: $colorfulBattery)
-                    .disabled(!intBattOnStatusBar)
-                Divider().opacity(0.5)
-                SPicker("Battery Icon Style", selection: $iosBatteryStyle) {
-                    Text("macOS").tag(false)
-                    Text("iOS").tag(true)
-                }.disabled(!intBattOnStatusBar)
-                Divider().opacity(0.5)
-                SPicker("Show Percentage", selection: $batteryPercent) {
-                    Text("Hidden").tag("hide")
-                    Text("Inside").tag("inside")
-                    Text("Outside").tag("outside")
-                }.disabled(!intBattOnStatusBar)
-                Divider().opacity(0.5)
-                SPicker("Remove Offline Device", selection: $disappearTime) {
-                    Text("Never").tag(UInt32.max)
-                    Text("after 20min").tag(20)
-                    Text("after 40min").tag(40)
-                    Text("after 60min").tag(60)
-                }
-                Divider().opacity(0.5)
-                SPicker("Hide percentage when above", selection: $hideLevel) {
-                    Text("Never").tag(100)
-                    ForEach(levelList, id: \.self) { number in
-                        Text("\(number)%").tag(number)
-                    }
-                    if !levelList.contains(hideLevel) && hideLevel != 100 {
-                        Text("\(hideLevel)%").tag(hideLevel)
-                    }
-                }.disabled(!intBattOnStatusBar || (batteryPercent == "hide"))
-            }
-            SGroupBox(label: "Dock") {
-                    SPicker("Appearance", selection: $appearance) {
-                        Text("Automatic").tag("auto")
-                        Text("Light").tag("false")
-                        Text("Dark").tag("true")
-                    }.pickerStyle(.segmented)
-                    Divider().opacity(0.5)
-                    SPicker("Built-in Battery Style", selection: $showThisMac, tips: "Show or hide this Mac's built-in battery in the Dock icon") {
-                        Text("Hidden").tag("hidden")
-                        Text("Device Icon").tag("icon")
-                        Text("Percent").tag("percent")
-                    }
-                    Divider().opacity(0.5)
-                    SToggle("Carousel Mode", isOn: $carouselMode, tips: "Cycle through all found devices in the Dock icon")
-            }
-        }
-    }
-}
-
-struct WidgetView: View {
-    //@AppStorage("showMacOnWidget") var showMacOnWidget = true
-    @AppStorage("revListOnWidget") var revListOnWidget = false
-    @AppStorage("deviceOnWidget") var deviceOnWidget = ""
-    @AppStorage("widgetInterval") var widgetInterval = 0
-    @AppStorage("deviceName") var deviceName = "Mac"
-    
-    @State var ib = getMacDeviceType().lowercased().contains("book")
-    @State var devices = [String]()
-
-    var body: some View {
-        SForm {
-            SGroupBox(label: "Widget") {
-                SToggle("Reverse Device List", isOn: $revListOnWidget)
-                Divider().opacity(0.5)
-                SPicker("Refresh Interval", selection: $widgetInterval) {
-                    Text("System Default").tag(-1)
-                    Text("Same as Nearbility").tag(0)
-                }
-                if #unavailable(macOS 14) {
-                    Divider().opacity(0.5)
-                    SPicker("Single Device Widget", selection: $deviceOnWidget) {
-                        Text("Not Set").tag("")
-                        if ib { Text(deviceName).tag(deviceName) }
-                        ForEach(devices, id: \.self) { device in
-                            Text(device).tag(device)
-                        }
-                        if !devices.contains(deviceOnWidget) && deviceOnWidget != deviceName && deviceOnWidget != "" {
-                            Text(deviceOnWidget).tag(deviceOnWidget)
-                        }
-                    }.onChange(of: deviceOnWidget) { _ in _ = AirBatteryModel.singleDeviceName() }
-                }
-                Divider().opacity(0.5)
-                SButton("Reload All Widgets", buttonTitle: "Reload") {
-                    AirBatteryModel.writeData()
-                    WidgetCenter.shared.reloadAllTimelines()
-                }
-            }
-        }
-        .onAppear { devices = AirBatteryModel.getAll(noFilter: true).filter({ $0.hasBattery }).map({ $0.deviceName }) }
-        .onReceive(dockTimer) { _ in
-            if #unavailable(macOS 14) {
-                devices = AirBatteryModel.getAll(noFilter: true).filter({ $0.hasBattery }).map({ $0.deviceName })
-            }
-        }
-    }
-}
-
-struct BlacklistView: View {
-    @AppStorage("whitelistMode") var whitelistMode = false
-    @State private var blockedItems = [String]()
-    @State private var temp = ""
-    @State private var showSheet = false
-    @State private var editingIndex: Int?
-    
-    var body: some View {
-        SForm(noSpacer: true) {
-            SGroupBox(label: "Blocklist") {
-                    SToggle("Allowlist Mode", isOn: $whitelistMode)
-                    Divider().opacity(0.5)
-                    HStack {
-                        Spacer()
-                        Text(whitelistMode ? "Only the following devices will be showed" : "The following devices will be ignored")
-                            .foregroundColor(.secondary)
-                        Spacer()
-                    }
-                    ZStack(alignment: Alignment(horizontal: .trailing, vertical: .bottom)) {
-                        List {
-                            ForEach(0..<blockedItems.count, id: \.self) { index in
-                                HStack {
-                                    Image(systemName: "minus.circle.fill")
-                                        .font(.system(size: 12))
-                                        .foregroundColor(.red)
-                                        .onTapGesture { if editingIndex == nil { blockedItems.remove(at: index) } }
-                                    Text(blockedItems[index])
-                                }
-                            }
-                        }
-                        Button(action: {
-                            showSheet = true
-                        }) {
-                            Image(systemName: "plus.square.fill")
-                                .font(.system(size: 20))
-                                .foregroundColor(.secondary)
-                        }
-                        .buttonStyle(.plain)
-                        .sheet(isPresented: $showSheet){
-                            VStack {
-                                TextField("Enter Device Name".local, text: $temp).frame(width: 300)
-                                HStack(spacing: 20) {
-                                    Button {
-                                        if temp == "" { return }
-                                        if !blockedItems.contains(temp) { blockedItems.append(temp) }
-                                        temp = ""
-                                        showSheet = false
-                                    } label: {
-                                        Text("Add to List").frame(width: 80)
-                                    }.keyboardShortcut(.defaultAction)
-                                    Button {
-                                        showSheet = false
-                                    } label: {
-                                        Text("Cancel").frame(width: 80)
-                                    }
-                                }.padding(.top, 10)
-                            }.padding()
-                        }
-                    }
-            }
-            .onAppear { blockedItems = (ud.object(forKey: "blockedDevices") as? [String]) ?? [String]() }
-            .onChange(of: blockedItems) { b in ud.setValue(b, forKey: "blockedDevices") }
-        }
-    }
-}
-
-struct DebugView: View {
+struct DebugTab: View {
     @AppStorage("test_debug") var test_debug = false
     @AppStorage("test_hasib") var test_hasib = false
     @AppStorage("test_acpower") var test_ac = false
     @AppStorage("test_full") var test_full = false
     @AppStorage("test_iblevel") var test_iblevel = 100
     @AppStorage("showDebug") var showDebug: Bool = false
-    
+
     @State private var deviceID: String = ""
     @State private var deviceType: String = ""
     @State private var deviceName: String = ""
@@ -465,17 +422,13 @@ struct DebugView: View {
     @State private var isCharging: Bool = false
     @State private var fullCharged: Bool = false
     @State private var isPresented: Bool = false
-    
-    @Binding var selectedItem: String?
-    
+
+    @Binding var tab: SettingsTab
+
     var body: some View {
         SForm(noSpacer: true) {
             SGroupBox {
                 SToggle("Debug Mode", isOn: $test_debug)
-                Divider().opacity(0.5)
-                SButton("Data Folder", buttonTitle: "Open") {
-                    NSWorkspace.shared.open(ncFolder.deletingLastPathComponent())
-                }
             }
             SGroupBox(label: "Built-in Battery") {
                 SToggle("Built-in Battery", isOn: $test_hasib)
@@ -561,9 +514,10 @@ struct DebugView: View {
             Button("Hide Debug Menu", action: {
                 test_debug = false
                 showDebug = false
-                selectedItem = "General"
+                tab = .general
             })
             .padding(.top, -6)
         }
+        .frame(width: 560)
     }
 }
