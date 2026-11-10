@@ -13,8 +13,8 @@ final class BatteryHistoryStore {
     static let fileURL: URL = fd.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         .appendingPathComponent("AirBattery/battery-history.json")
 
-    /// On-disk layout. Version 1 had no `names`; version 2 adds the last seen name of
-    /// every device so offline devices can still be listed by name.
+    /// On-disk layout. `names` holds the last seen name of every device so offline devices
+    /// can still be listed by name; it is optional on decode (older files have none).
     private struct HistoryFile: Codable {
         var version: Int
         var devices: [String: [BatterySample]]
@@ -35,7 +35,8 @@ final class BatteryHistoryStore {
             names = try container.decodeIfPresent([String: String].self, forKey: .names) ?? [:]
         }
     }
-    private static let fileVersion = 2
+    // names is an additive key; the pre-redesign build ignores unknown keys, so version stays 1 for downgrade safety.
+    private static let fileVersion = 1
     /// Minimum time between two writes triggered by `record`.
     private static let saveInterval: TimeInterval = 60
 
@@ -57,7 +58,8 @@ final class BatteryHistoryStore {
             do {
                 let data = try Data(contentsOf: url)
                 let file = try JSONDecoder().decode(HistoryFile.self, from: data)
-                if file.version == 1 || file.version == Self.fileVersion {
+                // 2 was written by interim builds of the redesign branch; same layout.
+                if file.version == Self.fileVersion || file.version == 2 {
                     for (id, samples) in file.devices { loaded[id] = DeviceHistory(samples: samples) }
                     loadedNames = file.names
                 } else {
@@ -85,7 +87,7 @@ final class BatteryHistoryStore {
         if histories[device.deviceID, default: DeviceHistory()].record(level: device.batteryLevel, charging: device.isCharging != 0, at: now) {
             dirty = true
         }
-        if deviceNames[device.deviceID] != device.deviceName {
+        if !device.deviceName.isEmpty && deviceNames[device.deviceID] != device.deviceName {
             deviceNames[device.deviceID] = device.deviceName
             dirty = true
         }

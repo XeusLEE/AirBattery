@@ -105,7 +105,7 @@ struct KnownDevice: Identifiable, Equatable {
   - `Pin to menu bar` anahtarı → `pinnedList` güncelle; açılınca `refeshPinnedBar()`, kapanınca `refeshPinnedBar(unpin: name)`. Çevrimdışı/hiç görülmemiş cihazlar için `disabled`.
   - `Low battery alert` anahtar + `SSteper` 1…99; `Full battery alert` anahtar + `SSteper` 1…100; `Play sound` anahtarı (hem `lowSound` hem `fullSound`). Değişiklikler `alertList`'teki `btAlert`'i günceller; kayıt yoksa `New device alert defaults` değerleriyle (`alertDefaultLow` 20, `alertDefaultFull` 80, `alertDefaultSound` true — yeni anahtarlar) oluşturulur; iki uyarı da kapalıysa kayıt silinir. Yazma: `ud.set(object: alertList, forKey: "alertList")` (mevcut yardımcı).
   - `Delete history for this device` düğmesi (`deviceID` varsa) → `remove(deviceID:)`; `sampleCount` 0 ise `disabled`.
-- Alt şerit: `Block by name…` (metin alanı + `Add`; boş/çift ad reddedilir) · `Remove unseen devices` (`pruneUnseen(olderThan: 7*86400, keeping: tüm listelerdeki adlar)`, sonuç `createAlert` ile "Removed %d devices") · sağda `Allowlist mode` anahtarı (`whitelistMode`; açılınca mevcut davranış aynen — ek uyarı yok).
+- Alt şerit: `Block by name…` (metin alanı + `Add`; boş/çift ad reddedilir; izin modunda alan `Allow by name…` yazar, hedef yine `blockedDevices`) · `Remove unseen devices` (`pruneUnseen(olderThan: 7*86400, keeping: tüm listelerdeki adlar)`, sonuç `createAlert` ile "Removed %d devices") · sağda `Allowlist mode` anahtarı (`whitelistMode`; açılınca mevcut davranış aynen — ek uyarı yok).
 - Üst bilgi satırı: `New device alert defaults: low %d%%, full %d%%` ve bir `Edit` düğmesi → küçük popover'da iki stepper + ses anahtarı.
 - Yenileme: `dockTimer` (5 sn) ile `KnownDeviceList.build` yeniden çalışır; seçim ada göre korunur.
 
@@ -147,4 +147,4 @@ Yeni anahtarlar (İngilizce metin = anahtar): `Appearance` (sekme; mevcut Dock a
 
 - `TabView` içeriğe göre boyutlama: SwiftUI `Settings` sahnesinde pencere yüksekliği sekmeye göre otomatik değişir; bir sekmede `ScrollView`/`List` esnek yükseklik verirse pencere büyümez — Cihazlar listesine sabit yükseklik verilir.
 - `blockedDevices` adla çalışır; aynı adlı iki cihaz birlikte engellenir (mevcut davranış).
-- Geçmiş dosyası sürüm 2'ye geçer; eski sürüm uygulamalar (main'deki 50d4875) `names` alanını yok sayar ve sürüm 2 dosyayı "unreadable" sayıp sıfırlar — kullanıcı eski DMG'ye dönerse geçmiş silinir. Kabul edilir.
+- Geçmiş dosyası `version: 1` kalır; `names` ek (additive) bir anahtardır, eski sürüm uygulama (main'deki 50d4875) bilinmeyen anahtarları yok saydığı için dosyayı kayıpsız okur — eski DMG'ye dönüşte geçmiş korunur.

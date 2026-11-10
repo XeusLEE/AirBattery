@@ -228,6 +228,7 @@ struct DevicesTab: View {
             if selection == nil { selection = devices.first?.name }
         }
         .onReceive(dockTimer) { _ in reload() }
+        .onChange(of: whitelistMode) { _ in reload() }
     }
 
     // MARK: Pieces
@@ -280,12 +281,14 @@ struct DevicesTab: View {
 
     private var footer: some View {
         HStack(spacing: 8) {
-            TextField("Block by name…".local, text: $blockName, onCommit: addBlockedName)
+            TextField((whitelistMode ? "Allow by name…" : "Block by name…").local, text: $blockName, onCommit: addBlockedName)
                 .textFieldStyle(.roundedBorder)
-                .frame(width: 150)
+                .frame(minWidth: 90, idealWidth: 150, maxWidth: 150)
             Button("Add", action: addBlockedName)
                 .disabled(!canAdd)
+                .fixedSize()
             Button("Remove unseen devices", action: removeUnseen)
+                .fixedSize()
             Spacer()
             SToggle("Allowlist Mode", isOn: $whitelistMode)
                 .fixedSize(horizontal: true, vertical: false)
@@ -385,7 +388,7 @@ struct DeviceDetailView: View {
                 SToggle(LocalizedStringKey(allowlistMode ? "Allowed" : "Blocked"), isOn: listed)
                 SDivider()
                 SToggle("Pin to menu bar", isOn: pinned)
-                    .disabled(!device.isOnline)
+                    .disabled(!device.isOnline && !device.isPinned)
             }
             SGroupBox {
                 HStack(spacing: 8) {
@@ -477,7 +480,10 @@ struct DeviceDetailView: View {
         Binding(get: { device.isListed }, set: { listed in
             DeviceLists.set(device.name, in: "blockedDevices", present: listed)
             let invisible = allowlistMode ? !listed : listed
-            if invisible { AirBatteryModel.Devices.removeAll { $0.deviceName == device.name } }
+            if invisible {
+                AirBatteryModel.Devices.removeAll { $0.deviceName == device.name }
+                if device.isPinned { refeshPinnedBar() }
+            }
             onChange()
         })
     }

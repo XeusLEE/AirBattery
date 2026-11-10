@@ -175,7 +175,7 @@ struct AppearanceTab: View {
     @State var devices = [String]()
 
     var body: some View {
-        SForm {
+        SForm(spacing: 16) {
             SGroupBox(label: "Menu Bar") {
                 SToggle("Dynamic Battery Icon", isOn: $intBattOnStatusBar)
                 Divider().opacity(0.5)
@@ -215,11 +215,17 @@ struct AppearanceTab: View {
                 Divider().opacity(0.5)
                 SSteper("Low threshold", value: $lowThreshold, min: 5, max: 50)
                     .disabled(!menuBarLowSuffix)
-                    .onChange(of: lowThreshold) { v in if criticalThreshold > v { criticalThreshold = v } }
+                    .onChange(of: lowThreshold) { v in
+                        let c = min(max(v, 5), 50)
+                        if criticalThreshold > c { criticalThreshold = c }
+                    }
                 Divider().opacity(0.5)
                 SSteper("Critical threshold", value: $criticalThreshold, min: 5, max: 30)
                     .disabled(!menuBarLowSuffix)
-                    .onChange(of: criticalThreshold) { v in if v > lowThreshold { lowThreshold = v } }
+                    .onChange(of: criticalThreshold) { v in
+                        let c = min(max(v, 5), 30)
+                        if c > lowThreshold { lowThreshold = c }
+                    }
             }
             SGroupBox(label: "Dock") {
                     SPicker("Appearance", selection: $appearance) {
