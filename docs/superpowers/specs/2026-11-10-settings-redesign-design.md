@@ -20,7 +20,7 @@ Kullanıcıyla konuşarak alınanlar:
 Kullanıcı uyurken verilen kararlar (sabah raporunda listelenir, dal main'e birleştirilmez):
 
 - **K1 — Cihazlar düzeni: B, liste + ayrıntı paneli.** Satır içi kontroller 560 pt genişlikte uzun adlarla sıkışır ve uyarı eşikleri için ayrı bir popover gerektirir; ayrıntı paneli tüm cihaz ayarlarını ve cihaz başına geçmiş silmeyi yazıyla gösterir, Sistem Ayarları diliyle uyumludur. Bedeli: bir cihazın durumunu görmek için onu seçmek gerekir.
-- **K2 — Kimlik.** Mevcut listeler (`blackList`, `blockedDevices`, `pinnedList`, `alertList`) cihaz **adıyla** çalışır; geçmiş deposu **deviceID** ile. Cihazlar sekmesi her ikisini birleştirir; geçmiş dosyasına `names` sözlüğü eklenir (sürüm 2) ki çevrimdışı cihazlar adıyla listelenebilsin.
+- **K2 — Kimlik.** Mevcut listeler (`blackList`, `blockedDevices`, `pinnedList`, `alertList`) cihaz **adıyla** çalışır; geçmiş deposu **deviceID** ile. Cihazlar sekmesi her ikisini birleştirir; geçmiş dosyasına `names` sözlüğü eklenir (sürüm numarası 1 kalır, `names` ek anahtardır) ki çevrimdışı cihazlar adıyla listelenebilsin.
 - **K3 — Engelleme izin listesi modunda.** Görünürlük denetimi yalnızca Göster/Gizle (`blackList`); engelleme ayrı bir satırdır: normal modda "Engelli" anahtarı (`blockedDevices`'ta olmak), izin listesi modunda aynı satır "İzinli" olur (yine `blockedDevices`'ta olmak). Veri semantiği mevcut `checkIfBlocked(name:)` ile birebir aynı kalır.
 - **K4 — Kritik eşik ayarlanabilir olur.** `menuBarCriticalThreshold` sabiti UserDefaults'tan okunan fonksiyona dönüşür (varsayılan 10); ek ayrıca tamamen kapatılabilir (`menuBarLowSuffix`, varsayılan açık).
 - **K5 — Geçmiş temizliği.** "Geçmişi temizle" tüm örnekleri siler (onaylı); "Görülmeyenleri temizle" 7 günden uzun süredir görülmeyen ve hiçbir listede olmayan cihazların geçmiş kayıtlarını siler. Cihaz başına silme ayrıntı panelindedir.
@@ -34,7 +34,7 @@ Popover, Dock penceresi, widget'lar, uyarı penceresi (`AlertWindowController`) 
 
 - `AirBattery/ViewModel/SettingsView.swift` — yeniden yazılır: `SettingsView` (TabView kökü) + sekme görünümleri `GeneralTab`, `AppearanceTab`, `DiscoveryTab`, `DebugTab` (Debug içeriği mevcut `DebugView`'dan "Data Folder" düğmesi çıkarılarak taşınır).
 - `AirBattery/ViewModel/DevicesSettingsView.swift` — yeni: `DevicesTab`, `DeviceDetailView`, `KnownDevice` modeli ve `KnownDeviceList.build(...)` saf birleştirme fonksiyonu.
-- `AirBattery/BatteryInfo/BatteryHistoryStore.swift` — dosya sürümü 2 (`names`), yeni API: `summary() -> (deviceCount: Int, bytes: Int)`, `names() -> [String: String]`, `lastSeen() -> [String: TimeInterval]`, `clear()`, `remove(deviceID:)`, `pruneUnseen(olderThan: TimeInterval, keeping names: Set<String>) -> Int`.
+- `AirBattery/BatteryInfo/BatteryHistoryStore.swift` — dosya sürümü 1 kalır, `names` ek anahtarı (`decodeIfPresent`), yeni API: `summary() -> (deviceCount: Int, bytes: Int)`, `names() -> [String: String]`, `lastSeen() -> [String: TimeInterval]`, `clear()`, `remove(deviceID:)`, `pruneUnseen(olderThan: TimeInterval, keeping names: Set<String>) -> Int`.
 - `AirBattery/Supports/Supports.swift` — `menuBarCriticalThreshold` sabiti → `func menuBarCriticalThreshold() -> Int`; `func menuBarLowSuffixEnabled() -> Bool`.
 - `AirBattery/ViewModel/BatteryView.swift` — ek kapatılabilir; kritik eşik fonksiyonu kullanılır.
 - `AirBattery/ViewModel/ContentView.swift` — `showEstimate` kapalıyken kart tahmini `.none`; `openSettingPanel()` pencere konumu.
@@ -111,7 +111,7 @@ struct KnownDevice: Identifiable, Equatable {
 
 ### 8.3 Geçmiş deposu değişiklikleri
 
-- `HistoryFile { version: Int = 2; devices: [String: [BatterySample]]; names: [String: String] }`. `load()`: sürüm 1 dosya kabul edilir (`names` boş); sürüm 2 normal; başka sürüm → mevcut bozuk dosya yolu.
+- `HistoryFile { version: Int = 1; devices: [String: [BatterySample]]; names: [String: String] }`. `load()`: sürüm 1 ve 2 kabul edilir (`names` yoksa boş); kayıt her zaman sürüm 1 yazar (bkz. §13); başka sürüm → mevcut bozuk dosya yolu.
 - `record(_:)`: `names[deviceID] = deviceName` (değiştiyse `dirty`).
 - `clear()`: tüm `histories` ve `names` boşaltılır, `saveIfNeeded(force: true)`.
 - `remove(deviceID:)`: tek cihaz, zorunlu kayıt.
