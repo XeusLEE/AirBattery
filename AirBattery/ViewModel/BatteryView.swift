@@ -160,14 +160,14 @@ struct mainBatteryView: View {
                         .frame(width: 13, height: 13)
                     Text("\(d.batteryLevel)%")
                         .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(d.batteryLevel <= menuBarCriticalThreshold ? .red : .orange)
+                        .foregroundColor(d.batteryLevel <= menuBarCriticalThreshold() ? .red : .orange)
                 }
             }
         }
-        .onAppear { lowDevice = lowestLowDevice(in: AirBatteryModel.getAll()) }
+        .onAppear { lowDevice = menuBarLowSuffixEnabled() ? lowestLowDevice(in: AirBatteryModel.getAll()) : nil }
         .onReceive(dockTimer) { t in refeshPinnedBar() }
         .onReceive(mainTimer) { t in
-            lowDevice = lowestLowDevice(in: AirBatteryModel.getAll())
+            lowDevice = menuBarLowSuffixEnabled() ? lowestLowDevice(in: AirBatteryModel.getAll()) : nil
             if item.hasBattery {
                 InternalBattery.status = getPowerState()
                 if intBattOnStatusBar {

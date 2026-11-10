@@ -180,6 +180,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUserNotifi
                 "readBTHID": true,
                 "whitelistMode": false,
                 "menuBarLowThreshold": 20,
+                "showEstimate": true,
+                "menuBarLowSuffix": true,
+                "menuBarCriticalThreshold": 10,
+                "alertDefaultLow": 20,
+                "alertDefaultFull": 80,
+                "alertDefaultSound": true,
                 "neverRemindMe": [String]()
             ]
         )
@@ -416,6 +422,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, UNUserNotifi
                     DispatchQueue.main.async { if !menuPopover.isShown { self.togglePopover(nil) } }
                 case "hidepopover":
                     DispatchQueue.main.async { menuPopover.performClose(nil) }
+                case "showsettings":
+                    DispatchQueue.main.async { openSettingPanel() }
                 default: print("Unknow command!")
                 }
             }

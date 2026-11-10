@@ -12,7 +12,9 @@ import UserNotifications
 let widgetInterval = ud.integer(forKey: "widgetInterval")
 let updateInterval = ud.integer(forKey: "updateInterval")
 let staleAfterMinutes: Double = 10
-let menuBarCriticalThreshold = 10
+func menuBarCriticalThreshold() -> Int { return ud.integer(forKey: "menuBarCriticalThreshold") }
+func menuBarLowSuffixEnabled() -> Bool { return ud.bool(forKey: "menuBarLowSuffix") }
+func showEstimateEnabled() -> Bool { return ud.bool(forKey: "showEstimate") }
 func menuBarLowThreshold() -> Int { return ud.integer(forKey: "menuBarLowThreshold") }
 
 let mainTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()

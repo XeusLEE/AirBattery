@@ -326,6 +326,7 @@ struct popover: View {
     }
 
     private func cardEstimate(for device: Device) -> Estimate {
+        guard showEstimateEnabled() else { return .none }
         if device.deviceID == "@MacInternalBattery" { return internalEstimate(InternalBattery.status) }
         return BatteryHistoryStore.shared.estimate(for: device)
     }
@@ -353,7 +354,7 @@ struct popover: View {
                     VStack(alignment: .leading, spacing: PopoverLayout.cardSpacing) {
                         if isEmptyState {
                             DeviceCardView(device: ib2ab(InternalBattery.status),
-                                           estimate: internalEstimate(InternalBattery.status),
+                                           estimate: cardEstimate(for: ib2ab(InternalBattery.status)),
                                            isHovered: false, hasAlert: false, isPinned: false) {
                                 EmptyView()
                             }
@@ -616,6 +617,12 @@ func openSettingPanel() {
         NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
     } else {
         NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+        guard let w = NSApp.windows.first(where: { ($0.identifier?.rawValue ?? "").contains("Settings") || $0.contentView?.className.contains("SettingsView") == true }) ?? NSApp.keyWindow else { return }
+        w.setFrameAutosaveName("AirBatterySettingsWindow")
+        if !w.setFrameUsingName("AirBatterySettingsWindow") { w.center() }
+        w.makeKeyAndOrderFront(nil); w.orderFrontRegardless()
     }
 }
 
