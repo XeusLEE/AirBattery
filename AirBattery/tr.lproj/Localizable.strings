@@ -170,3 +170,46 @@
 "%d d" = "%d gün";
 
 " has been copied to the clipboard." = " panoya kopyalandı.";
+
+/* Settings redesign (2026-11-10) */
+"Devices" = "Cihazlar";
+"Discovery" = "Keşif";
+"Estimate & Data" = "Tahmin ve Veri";
+"Show remaining time estimate" = "Kalan süre tahminini göster";
+"History: %d devices, %@" = "Geçmiş: %d cihaz, %@";
+"Clear History" = "Geçmişi Temizle";
+"Clear battery history?" = "Pil geçmişi temizlensin mi?";
+"This removes the collected samples for all devices. Estimates start over." = "Tüm cihazlar için toplanan örnekler silinir. Tahminler sıfırdan başlar.";
+"Clear" = "Temizle";
+"Low Device Badge" = "Düşük Cihaz Eki";
+"Show low devices in the menu bar" = "Düşük cihazları menü çubuğunda göster";
+"Low threshold" = "Düşük eşiği";
+"Critical threshold" = "Kritik eşik";
+"No devices yet" = "Henüz cihaz yok";
+"Select a device" = "Bir cihaz seç";
+"Visibility" = "Görünürlük";
+"Show" = "Göster";
+"Hide" = "Gizle";
+"Blocked" = "Engelli";
+"Allowed" = "İzinli";
+"hidden" = "gizli";
+"blocked" = "engelli";
+"not allowed" = "izinsiz";
+"offline" = "çevrimdışı";
+"Pin to menu bar" = "Menü çubuğuna raptiyele";
+"Low battery alert" = "Düşük pil uyarısı";
+"Full battery alert" = "Dolu pil uyarısı";
+"Play sound" = "Ses çal";
+"Delete history for this device" = "Bu cihazın geçmişini sil";
+"Block by name…" = "Ada göre engelle…";
+"Add" = "Ekle";
+"Remove unseen devices" = "Görülmeyen cihazları kaldır";
+"Removed %d devices" = "%d cihaz kaldırıldı";
+"Last seen %@" = "Son görülme: %@";
+"Never seen" = "Hiç görülmedi";
+"New device alert defaults: low %d%%, full %d%%" = "Yeni cihaz uyarı varsayılanları: düşük %%%d, dolu %%%d";
+"Edit" = "Düzenle";
+"Default low" = "Varsayılan düşük";
+"Default full" = "Varsayılan dolu";
+"Data Folder" = "Veri Klasörü";
+"Debug" = "Hata Ayıklama";
