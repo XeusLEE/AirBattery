@@ -369,12 +369,13 @@ struct DeviceCardView<Actions: View>: View {
                 .foregroundColor(.secondary)
                 .lineLimit(1)
             Spacer(minLength: 4)
-            if isHovered {
+            if isHovered && device.hasBattery {
                 actions()
             } else {
                 lastSeen
             }
         }
+        .frame(height: 18)
     }
 
     private var leadingMetaText: String {

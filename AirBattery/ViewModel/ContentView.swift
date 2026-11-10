@@ -519,10 +519,11 @@ struct popover: View {
     /// Section caption plus the row of hidden-device icons; a click on an icon un-hides it.
     private var hiddenSection: some View {
         Group {
-            Text("Hidden".local.uppercased())
+            Text("Hidden".local)
                 .font(.system(size: 9.5, weight: .bold))
                 .foregroundColor(.secondary)
                 .tracking(0.8)
+                .textCase(.uppercase)
                 .frame(height: PopoverLayout.sectionCaptionHeight)
             HStack(spacing: 5) {
                 Image("sunglasses.fill")
@@ -579,10 +580,11 @@ struct nearcastView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: PopoverLayout.cardSpacing) {
-            Text(("Nearcast".local + " · " + (devices.first?.deviceName ?? "")).uppercased())
+            Text("Nearcast".local + " · " + (devices.first?.deviceName ?? ""))
                 .font(.system(size: 9.5, weight: .bold))
                 .foregroundColor(.secondary)
                 .tracking(0.8)
+                .textCase(.uppercase)
                 .frame(height: PopoverLayout.sectionCaptionHeight)
             ForEach(devices.indices, id: \.self) { index in
                 DeviceCardView(device: devices[index],

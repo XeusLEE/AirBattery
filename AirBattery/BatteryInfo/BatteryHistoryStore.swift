@@ -92,6 +92,7 @@ final class BatteryHistoryStore {
             lastSave = now
         } catch {
             print("⚠️ battery history not saved: \(error)")
+            lastSave = now
         }
     }
 }
