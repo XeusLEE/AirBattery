@@ -65,6 +65,7 @@
 		F461731F82F8E4974878B29A /* Estimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE53574305E36D3F26493F8A /* Estimator.swift */; };
 		C94722CBB686AC8E202CED1E /* BatteryHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96FDB4242114C0654172DD6C /* BatteryHistoryStore.swift */; };
 		E77EF5AE9D4B0FAE9E1AF8B2 /* DeviceCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D909FD70B862B9CD9498065 /* DeviceCardView.swift */; };
+		AE8CA28A75BA75A50DAEB6E6 /* DevicesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78600A2189E3CA5D255248B9 /* DevicesSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -180,6 +181,7 @@
 		1D909FD70B862B9CD9498065 /* DeviceCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCardView.swift; sourceTree = "<group>"; };
 		DC69948EA3849D30A339B515 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "tr"; path = "tr.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		B125FA04DF7D97B32477B2A9 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "tr"; path = "tr.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		78600A2189E3CA5D255248B9 /* DevicesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -357,6 +359,7 @@
 				1819E94B2CC2A8C2007B95E9 /* BatteryAlertView.swift */,
 				1841D4802AAA28880022A1BE /* SettingsView.swift */,
 				1D909FD70B862B9CD9498065 /* DeviceCardView.swift */,
+				78600A2189E3CA5D255248B9 /* DevicesSettingsView.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -584,6 +587,7 @@
 				F461731F82F8E4974878B29A /* Estimator.swift in Sources */,
 				C94722CBB686AC8E202CED1E /* BatteryHistoryStore.swift in Sources */,
 				E77EF5AE9D4B0FAE9E1AF8B2 /* DeviceCardView.swift in Sources */,
+				AE8CA28A75BA75A50DAEB6E6 /* DevicesSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
