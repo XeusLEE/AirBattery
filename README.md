@@ -4,6 +4,10 @@
 <h3 align="center">Battery levels of your Mac and every nearby device, in the menu bar, the Dock and widgets.<br>A fork of <a href="https://github.com/lihaoyun6/AirBattery">lihaoyun6/AirBattery</a> with a redesigned interface.</h3>
 </p>
 
+<p align="center">
+<img src="./img/popover.png" width="352" alt="AirBattery popover: one card per device with battery level, remaining-time estimate and last-seen time" />
+</p>
+
 ## What this fork adds
 
 - **Card-based popover and Dock window.** One card per device with icon, name, status chip (Charging / Low / Getting low / Full / Plugged in), percentage, level bar, remaining-time estimate and last-seen time. Hover a card for the alert, pin, copy and hide actions.
@@ -11,6 +15,10 @@
 - **Low-device badge in the menu bar.** When a device that is not charging drops below the low threshold (20 % by default, 10 % critical), its icon and percentage appear next to the Mac battery icon.
 - **A four-tab Settings window** (General · Appearance · Devices · Discovery) that sizes itself to its content. The Devices tab manages every known device in one place: show / hide, block or allow, pin to the menu bar, low and full alerts with sound, per-device history.
 - **Turkish localization**, in addition to the upstream English and Chinese.
+
+<p align="center">
+<img src="./img/settings-devices.png" width="560" alt="Settings → Devices: every known device with visibility, block, pin and alert controls" />
+</p>
 
 Everything else — the Nearbility discovery engine for iPhone / iPad / Apple Watch / AirPods / Magic devices / Bluetooth peripherals, Nearcast sharing between Macs on the same network, the widgets and the `abt` command line tool — is upstream's work and behaves as before.
 
@@ -59,6 +67,10 @@ If the signing secrets `MACOS_CERTIFICATE_P12`, `MACOS_CERTIFICATE_PASSWORD`, `A
 ## Türkçe
 
 Bu depo [lihaoyun6/AirBattery](https://github.com/lihaoyun6/AirBattery) uygulamasının yeniden tasarlanmış bir çatallamasıdır: kart tabanlı popover, her cihaz için kalan süre tahmini, menü çubuğunda düşük pilli cihaz eki, dört sekmeli Ayarlar penceresi ve Türkçe arayüz. Kurulum için [Releases](../../releases/latest) sayfasındaki DMG'yi indirin; uygulama noter onaylı olmadığından ilk açılışta **Sistem Ayarları → Gizlilik ve Güvenlik → Yine de Aç** adımı gerekir.
+
+<p align="center">
+<img src="./img/popover-tr.png" width="352" alt="Türkçe arayüz: şarj oluyor rozeti ve kalan süre tahmini" />
+</p>
 
 ## License and credits
 
